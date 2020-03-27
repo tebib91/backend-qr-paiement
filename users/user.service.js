@@ -45,7 +45,7 @@ async function create(userParam) {
     if (userParam.password) {
         user.hash = bcrypt.hashSync(userParam.password, 10);
     }
-
+    User.solde = 1000;
     // save user
     await user.save();
 }

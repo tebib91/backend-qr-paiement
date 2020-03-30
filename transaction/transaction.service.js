@@ -2,7 +2,9 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const db = require('_helpers/db');
+Transaction = require('../transaction/transaction.model');
 const User = db.User;
+
 
 module.exports = {
     createT,
@@ -12,31 +14,30 @@ module.exports = {
 
 
 async function getAll() {
-    return await User.find().select('-hash');
+    return await Transaction.find().select('-hash');
 }
 
 async function getById(id) {
-    return await User.findById(id).select('-hash');
+    return await Transaction.findById(id).select('-hash');
 }
 
-async function createT(userParam) {
+async function createT(transactionDetail) {
     // validate
-    if (await User.findOne({ username: userParam.username })) {
-        throw 'Username "' + userParam.username + '" is already taken';
+    const user = await User.find({ username: transactionDetail.sourceID });
+    console.log(user);
+
+    if (user) {
+        user.solde = user.solde - transactionDetail.montant
     }
 
-    const user = new User(userParam);
+    const transaction = new Transaction(transactionDetail);
 
-    // hash password
-    if (userParam.password) {
-        user.hash = bcrypt.hashSync(userParam.password, 10);
-    }
-    User.solde = 1000;
+
     // save user
-    await user.save();
+    await transaction.save();
 }
 
 
 async function _delete(id) {
-    await User.findByIdAndRemove(id);
+    await Transaction.findByIdAndRemove(id);
 }

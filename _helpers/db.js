@@ -6,3 +6,6 @@ mongoose.Promise = global.Promise;
 module.exports = {
     User: require('../users/user.model')
 };
+// module.exports = {
+//     Transaction: require('../transaction/transaction.model')
+// };

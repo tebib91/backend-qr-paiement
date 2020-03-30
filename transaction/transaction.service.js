@@ -21,20 +21,37 @@ async function getById(id) {
     return await Transaction.findById(id).select('-hash');
 }
 
-async function createT(transactionDetail) {
+async function createT(req, res, next) {
     // validate
-    const user = await User.find({ username: transactionDetail.sourceID });
-    console.log(user);
+    console.log(req);
 
-    if (user) {
-        user.solde = user.solde - transactionDetail.montant
-    }
+    // const userSource = await User.findById({ id: transactionDetail.sourceID });
+    // const userClient = await User.findById({ username: transactionDetail.clientID });
+    User.findById(req.sourceID, function (err, value) {
+        if (err) {
+            return next(err);
+        } else {
+            console.log("RESULT: " + value);
+            User.findById(req.clientID, function (err, res) {
+                if (err) { return next(err); } else {
+                    res.solde = res.solde - req.montant
+                    console.log("RESULT:2 " + res);
+                    User.update(res);
+                }
+            });
+        }
 
-    const transaction = new Transaction(transactionDetail);
+    });
+
+    // if (user) {
+    //     user.solde = user.solde - transactionDetail.montant
+    // }
+
+    // const transaction = new Transaction(transactionDetail);
 
 
-    // save user
-    await transaction.save();
+    // // save user
+    // await transaction.save();
 }
 
 
